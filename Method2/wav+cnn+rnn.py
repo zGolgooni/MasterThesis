@@ -140,11 +140,6 @@ for run in range(0, num_experiments):
     train_samples_id = train_fractions[run]
     test_samples_id = test_fractions[run]
 
-    raw_dimension = 4000
-    wav_level = 3
-    wav_dimension = 509
-    epochs = 25
-
 ############################# Pre step1 #################################
     i = 0
     index = 0
@@ -161,7 +156,7 @@ for run in range(0, num_experiments):
     cnn_train_y = np.empty((0, 2))
     for i in range(0,raw_train_x.shape[0]):
         sample = raw_train_x[i, :]
-        coefficients = pywt.wavedec(sample_x[index, :], mother_wavelet, level=wav_level)
+        coefficients = pywt.wavedec(sample[index, :], mother_wavelet, level=wav_level)
         wav_features = np.empty((0, 0))
         for j in range(0, num_coefficient):
             wav_features = np.append(wav_features, coefficients[j])
@@ -197,7 +192,8 @@ for run in range(0, num_experiments):
         sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
         sample_features = np.empty((0, wav_dimension))
         for index in range(0,sample_x.shape[0]):
-            coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
+            sample = raw_train_x[i, :]
+            coefficients = pywt.wavedec(sample[:, 0], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
             for j in range(0, num_coefficient):
                 wav_features = np.append(wav_features, coefficients[j])
@@ -239,7 +235,8 @@ for run in range(0, num_experiments):
         sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
         sample_features = np.empty((0,wav_dimension))
         for index in range(0,sample_x.shape[0]):
-            coefficients = pywt.wavedec(sample_x[index, :], mother_wavelet, level=wav_level)
+            sample = raw_train_x[i, :]
+            coefficients = pywt.wavedec(sample[:, 0], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
             for j in range(0, num_coefficient):
                 wav_features = np.append(wav_features, coefficients[j])
@@ -297,7 +294,8 @@ for run in range(0, num_experiments):
         sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
         sample_features = np.empty((0,wav_dimension))
         for index in range(0,sample_x.shape[0]):
-            coefficients = pywt.wavedec(sample_x[index, :], mother_wavelet, level=wav_level)
+            sample = raw_train_x[i, :]
+            coefficients = pywt.wavedec(sample[:, 0], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
             for j in range(0, num_coefficient):
                 wav_features = np.append(wav_features, coefficients[j])
