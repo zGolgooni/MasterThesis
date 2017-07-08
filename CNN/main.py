@@ -116,7 +116,7 @@ nb_filter5 = 2
 filter_length5 = 5
 nb_filter6 = 2
 filter_length6 = 2
-cnn_num_parameters = 1550
+cnn_num_parameters = 0
 
 batch_size = 250
 epochs = 35
@@ -314,7 +314,7 @@ print('\n--->Result for data = test , samples (%d Arrhythmic, %d Normal)' % ((fn
 print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, test_accuracy,test_sensitivity,test_precision))
 
 ##################################### Save results & parameters in file #####################################
-text_file = open("Result_main:raw+cnn.txt", "a")
+text_file = open("\nResult_main:raw+cnn.txt", "a")
 text_file.write("\t\t\tResult main: raw + CNN \n")
 text_file.write("Test: Accuracy: %f, Sensitivity: %f, Precision: %f\n" %(test_accuracy,test_sensitivity,test_precision))
 text_file.write("Train: Accuracy: %f, Sensitivity: %f, Precision: %f\n" %(train_accuracy,train_sensitivity,train_precision))
