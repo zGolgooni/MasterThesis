@@ -114,7 +114,7 @@ rnn_layer ='LSTM'
 rnn_hidden_node = 3
 rnn_dropout = 0.4
 
-batch_size = 100
+batch_size = 1
 epochs = 20
 
 #############################  #################################
@@ -140,10 +140,10 @@ for run in range(0, num_experiments):
         sample = raw_train_x[i, :]
         coefficients = pywt.wavedec(sample[:, 0], mother_wavelet, level=wav_level)
         wav_features = np.empty((0,0))
-        for i in range(0, num_coefficient):
-            wav_features = np.append(wav_features, coefficients[i])
-        reshaped_feature = np.reshape(wav_features,[1,wav_dimension])
-        clf_train_x = np.append(clf_train_x, reshaped_feature, axis=0)
+        for j in range(0, num_coefficient):
+            wav_features = np.append(wav_features, coefficients[j])
+        reshaped_features = np.reshape(wav_features,[1,wav_dimension])
+        clf_train_x = np.append(clf_train_x, reshaped_features, axis=0)
     clf_train_y = raw_train_y
 
     clf = tree.DecisionTreeClassifier()
@@ -158,8 +158,8 @@ for run in range(0, num_experiments):
         for index in range(0,sample_x.shape[0]):
             coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
-            for i in range(0, num_coefficient):
-                wav_features = np.append(wav_features, coefficients[i])
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
             reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
             sample_features = np.append(sample_features, reshaped_feature, axis=0)
         predicted = clf.predict(sample_features)
@@ -200,8 +200,8 @@ for run in range(0, num_experiments):
         for index in range(0,sample_x.shape[0]):
             coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
-            for i in range(0, num_coefficient):
-                wav_features = np.append(wav_features, coefficients[i])
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
             reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
             sample_features = np.append(sample_features, reshaped_feature, axis=0)
 
@@ -255,8 +255,8 @@ for run in range(0, num_experiments):
         for index in range(0,sample_x.shape[0]):
             coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
             wav_features = np.empty((0, 0))
-            for i in range(0, num_coefficient):
-                wav_features = np.append(wav_features, coefficients[i])
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
             reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
             sample_features = np.append(sample_features, reshaped_feature, axis=0)
 
