@@ -99,21 +99,21 @@ main_file = 'My data/In use/Data_v960412.csv'
 
 ids, paths, names, sampling_rates, labels, explanations,partitions,intervals = load_file(main_path, main_file)
 ############################# Set parameters #################################
-raw_dimension = 4000
+raw_dimension = 5000
 mother_wavelet = 'db4'
 wav_level = 8
 num_coefficient = 4
 wav_dimension = 0
 
 #wav_dimension = 22 + 22 + 38 + 69
-dimension_fraction = 4
+dimension_fraction = 5
 
-cnn_num_layer = 6
+cnn_num_layer = 4
 
 nb_filter1 = 4
 filter_length1 = 20
-nb_filter2 = 5
-filter_length2 = 16
+nb_filter2 = 4
+filter_length2 = 10
 nb_filter3 = 4
 filter_length3 = 10
 nb_filter4 = 4
@@ -124,15 +124,15 @@ nb_filter6 = 2
 filter_length6 = 2
 cnn_num_parameters = 1550
 
-batch_size = 250
-epochs = 35
+cnn_batch_size = 200
+cnn_epochs = 40
 
 rnn_layer ='LSTM'   #LSTM #SimpleRNN #GRU
 rnn_hidden_node = 3
 rnn_dropout = 0.4
 
-batch_size = 100
-epochs = 20
+rnn_batch_size = 5
+rnn_epochs = 20
 
 #############################  #################################
 
@@ -175,15 +175,17 @@ for run in range(0, num_experiments):
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, activation='relu'))
     cnn_model.add(MaxPooling1D())
+    '''
     cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, activation='relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter6, kernel_size=filter_length6, activation='relu'))
     cnn_model.add(MaxPooling1D())
+    '''
     cnn_model.add(Flatten())
     cnn_model.add(Dense(1))
     cnn_model.add(Activation('sigmoid'))
     cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
-    cnn_model.fit(cnn_train_x, cnn_train_y, batch_size=batch_size, nb_epoch=epochs, validation_split=0.15)
+    cnn_model.fit(cnn_train_x, cnn_train_y, batch_size=cnn_batch_size, nb_epoch=cnn_epochs, validation_split=0.15)
 
 ############################ Step 2 ################################
     rnn_train_x = []
@@ -215,13 +217,14 @@ for run in range(0, num_experiments):
     rnn_model.add(Activation('sigmoid'))
     rnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
-    # model.fit(array_train_x, np.array(rnn_train_y), batch_size=batch_size, nb_epoch=epochs, validation_split=0.15)
-    for counter in range(0, epochs):
+    rnn_model.fit(array_train_x, np.array(rnn_train_y), batch_size=rnn_batch_size, nb_epoch=rnn_epochs, validation_split=0.15)
+    '''
+    for counter in range(0, rnn_epochs):
         for x, y in zip(rnn_train_x, rnn_train_y):
             x = np.reshape(x, [1, x.shape[0], x.shape[1]])
             y = np.reshape(y, [1, 1])
             rnn_model.train_on_batch(x, y)
-
+    '''
 # ----------------  Test model  on test samples ---------------
     tp = 0
     tn = 0
@@ -389,11 +392,10 @@ text_file.write("\t %d kernel of size %d\n" %(nb_filter1, filter_length1))
 text_file.write("\t %d kernel of size %d\n" %(nb_filter2, filter_length2))
 text_file.write("\t %d kernel of size %d\n" %(nb_filter3, filter_length3))
 text_file.write("\t %d kernel of size %d\n" %(nb_filter4, filter_length4))
-text_file.write("\t %d kernel of size %d\n" %(nb_filter5, filter_length5))
-text_file.write("\t %d kernel of size %d\n" %(nb_filter6, filter_length6))
-text_file.write("  batch = %d, epochs = %d   raw_dimension =%d (cnn input(%d,1))\n" %(batch_size,epochs, raw_dimension,wav_dimension))
+
+text_file.write("  batch = %d, epochs = %d   raw_dimension =%d (cnn input(%d,1))\n" %(cnn_batch_size,cnn_epochs, raw_dimension,wav_dimension))
 
 text_file.write("\n RNN model with %d parameters, %s with %d node  (dropout = %f)\n" %(rnn_hidden_node,rnn_layer,rnn_dropout))
-text_file.write("batch = %d, epochs = %d  train on %d samples\n" %(batch_size,epochs,len(rnn_train_y)))
+text_file.write("batch = %d, epochs = %d  train on %d samples\n" %(rnn_batch_size,rnn_epochs,len(rnn_train_y)))
 text_file.write("#######################################################")
 text_file.close()
