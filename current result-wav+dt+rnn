@@ -1,0 +1,86 @@
+			Result wavelet + Decision Tree + RNN
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.700000, Sensitivity: 0.851852, Precision: 0.697702
+Train: Accuracy: 0.986014, Sensitivity: 0.988957, Precision: 0.986836
+Train fp =1,  1,  0,  1,  8,  
+Train fn =2,  0,  2,  3,  2,  
+Test fp =24,  22,  13,  19,  23,  
+Test fn =8,  6,  9,  9,  8,  
+ Wavelet : mother wavelet = db4, level = 8 & 3 coefficients are used as feature
+ 82 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 1, epochs = 20  train on 286 samples
+#######################################################			Result wavelet + Decision Tree + RNN
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.727660, Sensitivity: 0.833333, Precision: 0.731323
+Train: Accuracy: 0.991608, Sensitivity: 0.988957, Precision: 0.996289
+Train fp =0,  0,  1,  1,  1,  
+Train fn =2,  0,  2,  3,  2,  
+Test fp =18,  19,  12,  17,  17,  
+Test fn =11,  10,  8,  7,  9,  
+ Wavelet : mother wavelet = db1, level = 8 & 4 coefficients are used as feature
+ 127 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 1, epochs = 20  train on 286 samples
+#######################################################			Result wavelet + Decision Tree + RNN
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.700000, Sensitivity: 0.844444, Precision: 0.698045
+Train: Accuracy: 0.986713, Sensitivity: 0.986503, Precision: 0.990176
+Train fp =3,  1,  1,  3,  0,  
+Train fn =2,  1,  2,  4,  2,  
+Test fp =21,  24,  15,  19,  20,  
+Test fn =5,  8,  9,  6,  14,  
+ Wavelet : mother wavelet = db4, level = 8 & 4 coefficients are used as feature
+ 151 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 100, epochs = 20  train on 286 samples
+#######################################################			Result wavelet + Decision Tree + RNN
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.717021, Sensitivity: 0.859259, Precision: 0.710750
+Train: Accuracy: 0.984615, Sensitivity: 0.987730, Precision: 0.985524
+Train fp =7,  0,  1,  2,  2,  
+Train fn =2,  2,  2,  3,  1,  
+Test fp =23,  17,  16,  22,  17,  
+Test fn =5,  12,  7,  3,  11,  
+ Wavelet : mother wavelet = db4, level = 8 & 4 coefficients are used as feature
+ 151 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 100, epochs = 20  train on 286 samples
+#######################################################
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.717021, Sensitivity: 0.851852, Precision: 0.713029
+Train: Accuracy: 0.989510, Sensitivity: 0.987730, Precision: 0.993917
+Train fp =1,  0,  0,  4,  0,  
+Train fn =2,  0,  2,  2,  4,  
+Test fp =16,  20,  18,  23,  16,  
+Test fn =13,  10,  7,  2,  8,  
+ Wavelet : mother wavelet = db1, level = 7 & 3 coefficients are used as feature
+ 127 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 1, epochs = 20  train on 286 samples
+#######################################################
+			Result wavelet + Decision Tree + RNN
+
+################### Save results & parameters in file ####################
+Test: Accuracy: 0.717021, Sensitivity: 0.851852, Precision: 0.713029
+Train: Accuracy: 0.989510, Sensitivity: 0.987730, Precision: 0.993917
+Train fp =1,  0,  0,  4,  0,  
+Train fn =2,  0,  2,  2,  4,  
+Test fp =16,  20,  18,  23,  16,  
+Test fn =13,  10,  7,  2,  8,  
+ Wavelet : mother wavelet = db1, level = 7 & 3 coefficients are used as feature
+ 127 features from input of length 4000
+
+ RNN model with 19 parameters, LSTM with 3 node  (dropout = 0.400000)
+batch = 1, epochs = 20  train on 286 samples
+#######################################################
