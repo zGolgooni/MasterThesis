@@ -112,11 +112,11 @@ nb_filter4 = 4
 filter_length4 = 5
 cnn_num_parameters = 0
 batch_size = 180
-epochs = 40
+epochs = 34
 rnn_hidden_node = 3
-rnn_dropout = 0.35
-rnn_epochs = 35
-rnn_batch_size = 5
+rnn_dropout = 0.5
+rnn_epochs = 30
+rnn_batch_size  = 1
 rnn_layer = 'LSTM'  # LSTM#SimpleRNN #GRU
 
 
@@ -128,22 +128,31 @@ for run in range(0, num_experiments):
 
     cnn_train_x, cnn_train_y = load_data_new(main_path, main_file, train_samples_id, dimension, train=True)
     cnn_train_x = np.reshape(cnn_train_x, [cnn_train_x.shape[0], dimension // dimension_fraction, dimension_fraction])
+    cnn_test_x, cnn_test_y = load_data_new(main_path, main_file, test_samples_id, dimension, train=True)
+    cnn_test_x = np.reshape(cnn_test_x, [cnn_test_x.shape[0], dimension // dimension_fraction, dimension_fraction])
 
     print('Build model...')
     cnn_model = Sequential()
     cnn_model.add(Conv1D(filters=nb_filter1, kernel_size=filter_length1, activation='relu', input_shape=(dimension//dimension_fraction,dimension_fraction)))
     cnn_model.add(MaxPooling1D())
+    cnn_model.add(Dropout(0.5))
+
     cnn_model.add(Conv1D(filters=nb_filter2, kernel_size=filter_length2, activation='relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter3, kernel_size=filter_length3, activation='relu'))
+    cnn_model.add(Dropout(0.5))
+
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, activation='relu'))
     cnn_model.add(MaxPooling1D())
+    cnn_model.add(Dropout(0.5))
+
+    '''
     cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, activation='relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter6, kernel_size=filter_length6, activation='relu'))
     cnn_model.add(MaxPooling1D())
-
+    '''
     cnn_model.add(Flatten())
     cnn_model.add(Dense(1))
     cnn_model.add(Activation('sigmoid'))
