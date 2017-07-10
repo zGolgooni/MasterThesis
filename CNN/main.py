@@ -2,16 +2,12 @@ __author__ = 'Zeynab'
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation,LSTM, Conv1D, MaxPooling1D, Flatten,SimpleRNN
 from keras.preprocessing import sequence
-
-
 import numpy as np
 from Tools.file.read_list import load_file, split_samples, load_partitions
 from CNN.train_data import load_data_new, load_sample
-
 num_experiments = 5
 train = 236
 test = 80
-
 train_tp = []
 train_tn = []
 train_fp = []
@@ -20,7 +16,6 @@ train_acc = []
 train_sens = []
 train_prec = []
 #train_fn = np.empty([num_experiments,1])
-
 test_tp = []
 test_tn = []
 test_fp = []
@@ -28,10 +23,8 @@ test_fn = []
 test_acc = []
 test_sens = []
 test_prec = []
-
 train_fractions = []
 test_fractions = []
-
 #part1
 train_fractions.append(np.array([2, 3, 4, 5, 6, 7, 10, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 25, 26, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 41, 42, 43, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 60, 63, 64, 66, 67, 68, 69, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 83, 85, 86, 87, 88, 90, 91, 92, 93, 94, 95, 97, 98, 99, 100, 102, 103, 104, 105, 106, 108, 109, 110, 111, 112, 113, 114, 115, 117, 118, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 134, 135, 136, 137, 138, 139, 140, 141, 143, 146, 147, 148, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 173, 175, 176, 177, 178, 180, 181, 182, 184, 185, 186, 187, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 208, 209, 212, 214, 216, 217, 218, 219, 222, 224, 225, 226, 227, 228, 229, 230, 231, 232, 234, 236, 237, 238, 239, 240, 242, 243, 244, 245, 246, 247, 250, 252, 253, 254, 256, 257, 260, 261, 262, 263, 265, 266, 268, 269, 270, 271, 272, 273, 275, 276, 277, 278, 279, 281, 284, 286, 288, 289, 291, 292, 293, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 307, 309, 310, 311, 312, 313, 314, 315, 316, 319, 320, 321, 322, 323, 324, 326, 327, 328, 329, 330, 332, 333, 334, 335, 337, 338, 339, 340, 341, 346, 347, 348, 351, 353, 354, 355, 356, 357, 358, 364, 365, 366, 367, 368, 369, 370, 373, 374, 375, 376, 378]))
 test_fractions.append(np.array([ 40, 264, 363, 188,  46, 361, 345, 274, 285, 362, 267, 235, 144,
@@ -52,7 +45,6 @@ test_fractions.append(np.array([40, 263, 270,  49,  44, 265, 361,  42, 187, 358,
        324, 228,  63,  20, 165,  76, 224,  83, 341,  57, 374, 352, 278,
        233,  70, 377, 276, 301, 343,  28,  75, 296, 177, 279, 353,  65,
        359, 214, 275]))
-
 #part3
 train_fractions.append(np.array([0, 1, 2, 4, 5, 7, 8, 9, 10, 12, 15, 17, 20, 23, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 55, 56, 57, 58, 59, 61, 62, 63, 65, 66, 67, 70, 71, 72, 73, 75, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 117, 118, 119, 120, 121, 123, 124, 125, 127, 128, 131, 133, 134, 135, 136, 137, 138, 140, 141, 143, 144, 145, 147, 149, 150, 152, 153, 155, 156, 157, 158, 159, 161, 162, 163, 164, 165, 166, 167, 168, 170, 172, 173, 174, 175, 176, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 191, 192, 196, 197, 199, 200, 203, 204, 206, 207, 208, 211, 212, 214, 215, 216, 217, 219, 221, 223, 224, 225, 226, 227, 228, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 248, 249, 250, 251, 252, 254, 255, 256, 257, 259, 260, 261, 262, 263, 264, 265, 268, 269, 270, 272, 273, 275, 276, 277, 278, 280, 282, 284, 285, 286, 288, 289, 292, 293, 294, 295, 296, 297, 298, 299, 300, 302, 303, 304, 305, 306, 307, 308, 309, 311, 313, 315, 316, 318, 319, 321, 322, 323, 324, 326, 328, 329, 331, 334, 335, 338, 339, 340, 341, 342, 347, 348, 349, 351, 352, 353, 354, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 367, 368, 369, 370, 371, 372, 373, 374, 375, 377, 378, 379]))
 test_fractions.append(np.array([366, 266, 271,  54, 274, 190, 267,  50, 345,  41, 346,  68,  60,
@@ -63,7 +55,6 @@ test_fractions.append(np.array([366, 266, 271,  54, 274, 190, 267,  50, 345,  41
        291,  14, 209, 201, 202, 279, 218, 205, 105, 301, 344, 194,   3,
         99, 343, 333,  27, 231, 281,  16,  77,  69, 213, 177,   6, 122,
         53,  64,  19]))
-
 #part4
 train_fractions.append(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 15, 18, 19, 21, 22, 23, 24, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 42, 43, 45, 46, 47, 48, 49, 51, 52, 53, 55, 56, 57, 58, 59, 61, 62, 63, 64, 66, 67, 69, 70, 74, 75, 76, 77, 80, 81, 82, 83, 84, 85, 87, 88, 90, 91, 92, 94, 96, 97, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 112, 113, 114, 115, 117, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 134, 135, 136, 137, 138, 139, 140, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 155, 156, 157, 158, 159, 160, 161, 162, 164, 165, 166, 168, 169, 170, 171, 172, 174, 175, 177, 178, 179, 180, 181, 183, 184, 185, 186, 187, 188, 189, 192, 194, 197, 198, 199, 200, 201, 203, 204, 205, 207, 208, 209, 210, 212, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 228, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 242, 243, 247, 248, 249, 250, 251, 252, 253, 254, 256, 257, 258, 259, 261, 263, 265, 266, 267, 268, 269, 270, 272, 273, 275, 276, 277, 278, 280, 281, 282, 284, 285, 286, 287, 288, 289, 290, 294, 295, 296, 298, 299, 300, 301, 302, 307, 308, 310, 312, 313, 314, 315, 316, 317, 318, 319, 320, 322, 323, 325, 326, 328, 329, 330, 331, 332, 335, 336, 337, 340, 342, 343, 344, 346, 347, 351, 352, 353, 354, 355, 356, 357, 358, 359, 361, 362, 363, 364, 366, 367, 368, 370, 371, 373, 374, 376, 378]))
 test_fractions.append(np.array([ 50, 271, 365,  40, 264, 190, 274, 345,  44,  41,  54, 163, 293,
@@ -74,7 +65,6 @@ test_fractions.append(np.array([ 50, 271, 365,  40, 264, 190, 274, 345,  44,  41
        375, 377,  78, 303, 154, 193,  17,  79,  73,  65, 211,  14, 304,
        360, 226, 229, 341, 111, 292, 291, 279, 118, 339, 213, 297,  27,
        324, 227, 333]))
-
 #part5
 train_fractions.append(np.array([0, 2, 3, 4, 5, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 36, 37, 40, 42, 43, 44, 45, 47, 48, 49, 52, 55, 57, 58, 60, 61, 62, 64, 65, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 80, 81, 82, 83, 84, 85, 86, 87, 89, 90, 91, 92, 93, 94, 95, 96, 98, 100, 101, 102, 103, 104, 105, 106, 108, 109, 110, 111, 112, 113, 115, 116, 117, 118, 119, 120, 121, 122, 124, 127, 128, 129, 130, 131, 132, 133, 134, 136, 137, 139, 140, 141, 142, 143, 144, 146, 147, 148, 150, 151, 154, 155, 156, 157, 158, 162, 163, 164, 166, 167, 168, 169, 170, 171, 172, 177, 179, 180, 181, 182, 184, 185, 186, 187, 189, 191, 193, 195, 196, 197, 198, 199, 201, 204, 205, 207, 208, 209, 210, 211, 213, 214, 215, 216, 217, 219, 220, 221, 222, 224, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 237, 239, 241, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 257, 259, 260, 262, 263, 264, 265, 266, 268, 269, 271, 272, 273, 274, 275, 276, 279, 280, 281, 283, 284, 285, 287, 288, 289, 290, 291, 293, 294, 295, 296, 299, 301, 302, 303, 304, 305, 306, 307, 308, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 322, 323, 324, 326, 329, 330, 332, 334, 335, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 352, 353, 354, 355, 356, 359, 360, 362, 363, 364, 365, 366, 367, 369, 370, 373, 374, 375, 377, 379]))
 test_fractions.append(np.array([361, 358,  50,  54,  46,  51, 270, 190, 267,  41, 188,  59, 138,
@@ -85,19 +75,14 @@ test_fractions.append(np.array([361, 358,  50,  54,  46,  51, 270, 190, 267,  41
        300,  99,  53, 292,  63, 282, 212, 376, 183,   6,  12, 309,  56,
        175,  14, 194, 218, 145, 297, 325, 114, 278, 298, 230,  79, 206,
        203, 125,   7]))
-
 '''
 main_path = '/Users/Zeynab/'
 #main_file = 'My data/In use/Data_v960213.csv'
 main_file = 'My data/In use/Data_v960313.csv'
 '''
-
 main_path = '/home/mll/Golgooni/'
 main_file = 'My data/In use/Data_v960412.csv'
-
 ids, paths, names, sampling_rates, labels, explanations,partitions,intervals = load_file(main_path, main_file)
-
-
 ##################################### Set parameters #####################################
 dimension = 5000
 dimension_fraction = 5
@@ -111,42 +96,33 @@ filter_length3 = 10
 nb_filter4 = 4
 filter_length4 = 5
 cnn_num_parameters = 0
-batch_size = 180
-epochs = 34
+batch_size = 100
+epochs = 45
 rnn_hidden_node = 3
 rnn_dropout = 0.5
 rnn_epochs = 30
 rnn_batch_size  = 1
 rnn_layer = 'LSTM'  # LSTM#SimpleRNN #GRU
-
-
 for run in range(0, num_experiments):
     train_samples_id = train_fractions[run]
     test_samples_id = test_fractions[run]
-
 ##################################### Step 1 #####################################
-
     cnn_train_x, cnn_train_y = load_data_new(main_path, main_file, train_samples_id, dimension, train=True)
     cnn_train_x = np.reshape(cnn_train_x, [cnn_train_x.shape[0], dimension // dimension_fraction, dimension_fraction])
     cnn_test_x, cnn_test_y = load_data_new(main_path, main_file, test_samples_id, dimension, train=True)
     cnn_test_x = np.reshape(cnn_test_x, [cnn_test_x.shape[0], dimension // dimension_fraction, dimension_fraction])
-
     print('Build model...')
     cnn_model = Sequential()
     cnn_model.add(Conv1D(filters=nb_filter1, kernel_size=filter_length1, activation='relu', input_shape=(dimension//dimension_fraction,dimension_fraction)))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Dropout(0.5))
-
     cnn_model.add(Conv1D(filters=nb_filter2, kernel_size=filter_length2, activation='relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter3, kernel_size=filter_length3, activation='relu'))
     cnn_model.add(Dropout(0.5))
-
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, activation='relu'))
     cnn_model.add(MaxPooling1D())
-    cnn_model.add(Dropout(0.5))
-
     '''
     cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, activation='relu'))
     cnn_model.add(MaxPooling1D())
@@ -158,7 +134,6 @@ for run in range(0, num_experiments):
     cnn_model.add(Activation('sigmoid'))
     cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     cnn_model.fit(cnn_train_x, cnn_train_y, batch_size=batch_size, nb_epoch=epochs, validation_split=0.2)
-
 ##################################### Step 2 #####################################
     rnn_train_x = []
     rnn_train_y = []
@@ -185,15 +160,12 @@ for run in range(0, num_experiments):
     rnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
     #model.fit(array_train_x, np.array(rnn_train_y), batch_size=batch_size, nb_epoch=epochs, validation_split=0.15)
-
     for counter in range(0, epochs):
         for x, y in zip(rnn_train_x,rnn_train_y):
             x = np.reshape(x,[1,x.shape[0], 1])
             y = np.reshape(y,[1,1])
             rnn_model.train_on_batch(x, y)
-
 ##################################### Test on Test samples #####################################
-
     tp = 0
     tn = 0
     fp = 0
@@ -208,11 +180,9 @@ for run in range(0, num_experiments):
             predicted = cnn_model.predict(np.array(sample_x))
             #for counter in range(0, predicted.shape[0]):
                 #print('%d   %s  real label =%s    -> predicted = %f'%(i,names[i], labels[i], predicted[counter]))
-
             step1_predicted = cnn_model.predict(np.array(sample_x))
             reshaped_predicted = np.reshape(step1_predicted, [1, step1_predicted.shape[0], step1_predicted.shape[1]])
             final_predicted = rnn_model.predict(reshaped_predicted)
-
             if final_predicted < 0.5:
                 predicted_label = 'Normal'
             else:
@@ -244,9 +214,7 @@ for run in range(0, num_experiments):
     print(fn_samples)
     print('fp:')
     print(fp_samples)
-
 ##################################### Test on Train samples #####################################
-
     tp = 0
     tn = 0
     fp = 0
@@ -260,11 +228,9 @@ for run in range(0, num_experiments):
             sample_x = np.reshape(sample_x, [sample_x.shape[0], dimension//dimension_fraction,dimension_fraction])
             #for counter in range(0, predicted.shape[0]):
                 #print('%d   %s  real label =%s    -> predicted = %f'%(i,names[i], labels[i], predicted[counter]))
-
             step1_predicted = cnn_model.predict(np.array(sample_x))
             reshaped_predicted = np.reshape(step1_predicted, [1, step1_predicted.shape[0], step1_predicted.shape[1]])
             final_predicted = rnn_model.predict(reshaped_predicted)
-
             if final_predicted < 0.5:
                 predicted_label = 'Normal'
             else:
@@ -296,9 +262,7 @@ for run in range(0, num_experiments):
     print(fn_samples)
     print('fp:')
     print(fp_samples)
-
 ##################################### Total result #####################################
-
 tp = np.average(np.array(train_tp))
 tn = np.average(np.array(train_tn))
 fp = np.average(np.array(train_fp))
@@ -309,7 +273,6 @@ train_precision = np.average(np.array(train_prec))
 print('**** Total : Train samples: ****')
 print('\n--->Result for data = train , samples (%d Arrhythmic, %d Normal)' % ((fn+tp), (fp+tn)))
 print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, train_accuracy,train_sensitivity,train_precision))
-
 tp = np.average(np.array(test_tp))
 tn = np.average(np.array(test_tn))
 fp = np.average(np.array(test_fp))
@@ -320,7 +283,6 @@ test_precision = np.average(np.array(test_prec))
 print('**** Total : Test samples: ****')
 print('\n--->Result for data = test , samples (%d Arrhythmic, %d Normal)' % ((fn+tp), (fp+tn)))
 print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, test_accuracy,test_sensitivity,test_precision))
-
 ##################################### Save results & parameters in file #####################################
 text_file = open("\nResult_main:raw+cnn.txt", "a")
 text_file.write("\t\t\tResult main: raw + CNN \n")
@@ -338,11 +300,13 @@ for ans in test_fp:
 text_file.write("\nTest fn =")
 for ans in test_fn:
     text_file.write("%d,  " % ans)
-
 text_file.write("\nCNN model with %d parameters & %d layers ,  train on %d samples\n" %(cnn_model.count_params(), cnn_num_layer, cnn_train_x.shape[0]))
 text_file.write("\t %d kernel of size %d\n" %(nb_filter1, filter_length1))
+text_file.write("\tdropout 0.5")
 text_file.write("\t %d kernel of size %d\n" %(nb_filter2, filter_length2))
+text_file.write("\tdropout 0.5")
 text_file.write("\t %d kernel of size %d\n" %(nb_filter3, filter_length3))
+text_file.write("\tdropout 0.5")
 text_file.write("\t %d kernel of size %d\n" %(nb_filter4, filter_length4))
 text_file.write("  batch = %d, epochs = %d   dimension =%d (cnn input(%d,%d))\n" %(batch_size,epochs, dimension,dimension//dimension_fraction, dimension_fraction))
 text_file.write("\nRNN model with %d parameters, %s with %d node ,  train on %d samples  \n" %(rnn_model.count_params(),rnn_layer,rnn_hidden_node,len(rnn_train_y)))
