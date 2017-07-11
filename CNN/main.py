@@ -87,14 +87,19 @@ ids, paths, names, sampling_rates, labels, explanations,partitions,intervals = l
 dimension = 5000
 dimension_fraction = 5
 cnn_num_layer = 4
-nb_filter1 = 4
-filter_length1 = 20
+nb_filter1 = 8
+filter_length1 = 16
 nb_filter2 = 4
 filter_length2 = 10
 nb_filter3 = 4
 filter_length3 = 10
 nb_filter4 = 4
 filter_length4 = 5
+nb_filter5 = 4
+filter_length5 = 5
+nb_filter6 = 4
+filter_length6 = 5
+
 cnn_num_parameters = 0
 batch_size = 100
 epochs = 45
@@ -123,12 +128,13 @@ for run in range(0, num_experiments):
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, activation='relu'))
     cnn_model.add(MaxPooling1D())
-    '''
+    cnn_model.add(Dropout(0.5))
     cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, activation='relu'))
     cnn_model.add(MaxPooling1D())
+    cnn_model.add(Dropout(0.5))
     cnn_model.add(Conv1D(filters=nb_filter6, kernel_size=filter_length6, activation='relu'))
     cnn_model.add(MaxPooling1D())
-    '''
+    
     cnn_model.add(Flatten())
     cnn_model.add(Dense(1))
     cnn_model.add(Activation('sigmoid'))
@@ -308,6 +314,10 @@ text_file.write("\tdropout 0.5")
 text_file.write("\t %d kernel of size %d\n" %(nb_filter3, filter_length3))
 text_file.write("\tdropout 0.5")
 text_file.write("\t %d kernel of size %d\n" %(nb_filter4, filter_length4))
+text_file.write("\tdropout 0.5")
+text_file.write("\t %d kernel of size %d\n" %(nb_filter5, filter_length5))
+text_file.write("\tdropout 0.5")
+text_file.write("\t %d kernel of size %d\n" %(nb_filter6, filter_length6))
 text_file.write("  batch = %d, epochs = %d   dimension =%d (cnn input(%d,%d))\n" %(batch_size,epochs, dimension,dimension//dimension_fraction, dimension_fraction))
 text_file.write("\nRNN model with %d parameters, %s with %d node ,  train on %d samples  \n" %(rnn_model.count_params(),rnn_layer,rnn_hidden_node,len(rnn_train_y)))
 text_file.write("  batch = %d, epochs = %d      (dropout = %f)\n" %(rnn_batch_size,rnn_epochs,rnn_dropout))
