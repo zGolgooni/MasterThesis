@@ -196,3 +196,189 @@ CNN model with 1029 parameters & 4 layers ,  train on 9796 samples
 RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
   batch = 200, epochs = 25      (dropout = 0.420000)
 #######################################################
+			Result main: raw + CNN 
+Test: Accuracy: 0.770213, Sensitivity: 0.818519, Precision: 0.796933
+Train: Accuracy: 0.854545, Sensitivity: 0.884663, Precision: 0.865395
+Train fp =35,  17,  15,  21,  26,  
+Train fn =6,  10,  31,  40,  7,  
+Test fp =12,  19,  6,  7,  15,  
+Test fn =6,  10,  14,  14,  5,  
+CNN model with 1137 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.780851, Sensitivity: 0.892593, Precision: 0.769656
+Train: Accuracy: 0.874825, Sensitivity: 0.934969, Precision: 0.861607
+Train fp =16,  15,  26,  47,  22,  
+Train fn =18,  9,  7,  12,  7,  
+Test fp =8,  21,  12,  18,  15,  
+Test fn =7,  4,  7,  6,  5,  
+CNN model with 1177 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5
+	 4 kernel of size 10
+	 Dropout 0.5
+	 4 kernel of size 10
+	 Dropout 0.5
+	 4 kernel of size 10
+	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.759574, Sensitivity: 0.837037, Precision: 0.767094
+Train: Accuracy: 0.880420, Sensitivity: 0.921472, Precision: 0.876731
+Train fp =30,  16,  14,  26,  21,  
+Train fn =10,  13,  18,  9,  14,  
+Test fp =14,  14,  11,  17,  13,  
+Test fn =7,  11,  13,  4,  9,  
+CNN model with 1513 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(500,10))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.727660, Sensitivity: 0.785185, Precision: 0.760747
+Train: Accuracy: 0.844056, Sensitivity: 0.892025, Precision: 0.845984
+Train fp =37,  22,  26,  35,  15,  
+Train fn =11,  3,  6,  16,  52,  
+Test fp =11,  24,  10,  18,  7,  
+Test fn =7,  3,  9,  14,  25,  
+CNN model with 1137 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 5
+  batch = 100, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.772340, Sensitivity: 0.848148, Precision: 0.779813
+Train: Accuracy: 0.891608, Sensitivity: 0.947239, Precision: 0.874211
+Train fp =18,  19,  16,  31,  28,  
+Train fn =6,  6,  12,  10,  9,  
+Test fp =8,  18,  9,  14,  17,  
+Test fn =5,  8,  16,  5,  7,  
+CNN model with 1137 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 10
+	 Dropout 0.5	 4 kernel of size 5
+  batch = 180, epochs = 40   dimension =5000 (cnn input(1000,5))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.751064, Sensitivity: 0.833333, Precision: 0.759186
+Train: Accuracy: 0.873427, Sensitivity: 0.919018, Precision: 0.869549
+Train fp =37,  13,  17,  23,  25,  
+Train fn =6,  18,  17,  16,  9,  
+Test fp =13,  16,  10,  16,  17,  
+Test fn =6,  8,  13,  11,  7,  
+CNN model with 1177 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 25
+	 Dropout 0.5
+	 4 kernel of size 10
+	 Dropout 0.5
+	 4 kernel of size 10
+	 Dropout 0.5
+	 4 kernel of size 10
+	 4 kernel of size 5
+  batch = 180, epochs = 40   dimension =5000 (cnn input(1000,5))
+
+RNN model with 19 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 1, epochs = 30      (dropout = 0.500000)
+#######################################################
+			Result main: raw + CNN 
+Test: Accuracy: 0.778723, Sensitivity: 0.885185, Precision: 0.767124
+Train: Accuracy: 0.926573, Sensitivity: 0.961963, Precision: 0.914188
+Train fp =18,  9,  21,  12,  14,  
+Train fn =4,  6,  10,  5,  6,  
+Test fp =12,  20,  13,  14,  14,  
+Test fn =4,  6,  6,  5,  10,  
+CNN model with 1029 parameters & 4 layers ,  train on 9796 samples
+	 4 kernel of size 20
+	 4 kernel of size 10
+	 4 kernel of size 10
+	 4 kernel of size 10
+  batch = 180, epochs = 34   dimension =4000 (cnn input(1000,4))
+
+RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 180, epochs = 35      (dropout = 0.350000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.776596, Sensitivity: 0.829630, Precision: 0.794787
+Train: Accuracy: 0.942657, Sensitivity: 0.959509, Precision: 0.941319
+Train fp =9,  9,  10,  15,  6,  
+Train fn =4,  6,  6,  8,  9,  
+Test fp =10,  19,  8,  11,  11,  
+Test fn =9,  9,  9,  9,  10,  
+CNN model with 957 parameters & 4 layers ,  train on 9796 samples
+	 4 kernel of size 20
+	 4 kernel of size 10
+	 4 kernel of size 10
+	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =4000 (cnn input(1000,4))
+
+RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 180, epochs = 35      (dropout = 0.350000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.791489, Sensitivity: 0.855556, Precision: 0.803098
+Train: Accuracy: 0.938462, Sensitivity: 0.953374, Precision: 0.939594
+Train fp =10,  9,  9,  12,  10,  
+Train fn =8,  8,  8,  7,  7,  
+Test fp =5,  17,  8,  13,  16,  
+Test fn =10,  6,  10,  6,  7,  
+CNN model with 1037 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 20
+	 4 kernel of size 10
+	 4 kernel of size 10
+	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 180, epochs = 35      (dropout = 0.350000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.795745, Sensitivity: 0.881481, Precision: 0.793803
+Train: Accuracy: 0.922378, Sensitivity: 0.946012, Precision: 0.921352
+Train fp =12,  6,  11,  12,  26,  
+Train fn =11,  5,  9,  11,  8,  
+Test fp =8,  16,  9,  10,  21,  
+Test fn =9,  8,  6,  6,  3,  
+CNN model with 1037 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 20
+	 4 kernel of size 10
+	 4 kernel of size 10
+	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 180, epochs = 35      (dropout = 0.350000)
+#######################################################			Result main: raw + CNN 
+Test: Accuracy: 0.772340, Sensitivity: 0.851852, Precision: 0.784343
+Train: Accuracy: 0.940559, Sensitivity: 0.959509, Precision: 0.938237
+Train fp =7,  12,  14,  6,  13,  
+Train fn =10,  5,  5,  9,  4,  
+Test fp =6,  25,  9,  13,  14,  
+Test fn =15,  6,  4,  9,  6,  
+CNN model with 1009 parameters & 4 layers ,  train on 9672 samples
+	 4 kernel of size 20
+	 4 kernel of size 10
+	 4 kernel of size 8
+	 4 kernel of size 5
+  batch = 180, epochs = 34   dimension =5000 (cnn input(1000,5))
+
+RNN model with 64 parameters, LSTM with 3 node ,  train on 286 samples  
+  batch = 180, epochs = 35      (dropout = 0.300000)
+#######################################################
