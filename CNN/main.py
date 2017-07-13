@@ -2,6 +2,9 @@ __author__ = 'Zeynab'
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation,LSTM, Conv1D, MaxPooling1D, Flatten,SimpleRNN
 from keras.preprocessing import sequence
+from keras.layers.normalization import BatchNormalization
+from keras.layers.advanced_activations import PReLU
+from keras.callbacks import ReduceLROnPlateau
 import numpy as np
 from Tools.file.read_list import load_file, split_samples, load_partitions
 from CNN.train_data import load_data_new, load_sample
@@ -85,27 +88,27 @@ main_file = 'My data/In use/Data_v960412.csv'
 ids, paths, names, sampling_rates, labels, explanations,partitions,intervals = load_file(main_path, main_file)
 ##################################### Set parameters #####################################
 dimension = 5000
-dimension_fraction = 5
+dimension_fraction = 1
 cnn_num_layer = 4
-nb_filter1 = 8
-filter_length1 = 16
-nb_filter2 = 4
+nb_filter1 = 5
+filter_length1 = 50
+nb_filter2 = 5
 filter_length2 = 10
 nb_filter3 = 4
-filter_length3 = 10
+filter_length3 = 5
 nb_filter4 = 4
 filter_length4 = 5
 nb_filter5 = 4
 filter_length5 = 5
-nb_filter6 = 4
+nb_filter6 = 2
 filter_length6 = 5
-
+cnn_stride = 5
 cnn_num_parameters = 0
-batch_size = 100
-epochs = 45
+batch_size = 200
+epochs = 70
 rnn_hidden_node = 3
 rnn_dropout = 0.5
-rnn_epochs = 30
+rnn_epochs = 40
 rnn_batch_size  = 1
 rnn_layer = 'LSTM'  # LSTM#SimpleRNN #GRU
 for run in range(0, num_experiments):
@@ -118,35 +121,48 @@ for run in range(0, num_experiments):
     cnn_test_x = np.reshape(cnn_test_x, [cnn_test_x.shape[0], dimension // dimension_fraction, dimension_fraction])
     print('Build model...')
     cnn_model = Sequential()
-    cnn_model.add(Conv1D(filters=nb_filter1, kernel_size=filter_length1, activation='relu', input_shape=(dimension//dimension_fraction,dimension_fraction)))
+    cnn_model.add(Conv1D(filters=nb_filter1, kernel_size=filter_length1,strides=cnn_stride, kernel_initializer='he_normal', input_shape=(dimension//dimension_fraction,dimension_fraction)))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Dropout(0.5))
-    cnn_model.add(Conv1D(filters=nb_filter2, kernel_size=filter_length2, activation='relu'))
-    cnn_model.add(MaxPooling1D())
-    cnn_model.add(Conv1D(filters=nb_filter3, kernel_size=filter_length3, activation='relu'))
-    cnn_model.add(Dropout(0.5))
-    cnn_model.add(MaxPooling1D())
-    cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, activation='relu'))
+    cnn_model.add(Conv1D(filters=nb_filter2, kernel_size=filter_length2, kernel_initializer='he_normal'))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Dropout(0.5))
-    cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, activation='relu'))
+    cnn_model.add(Conv1D(filters=nb_filter3, kernel_size=filter_length3, kernel_initializer='he_normal'))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
     cnn_model.add(MaxPooling1D())
     cnn_model.add(Dropout(0.5))
-    cnn_model.add(Conv1D(filters=nb_filter6, kernel_size=filter_length6, activation='relu'))
+    cnn_model.add(Conv1D(filters=nb_filter4, kernel_size=filter_length4, kernel_initializer='he_normal'))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
     cnn_model.add(MaxPooling1D())
-    
+    cnn_model.add(Dropout(0.5))
+    cnn_model.add(Conv1D(filters=nb_filter5, kernel_size=filter_length5, kernel_initializer='he_normal'))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
+    cnn_model.add(MaxPooling1D())
+    cnn_model.add(Dropout(0.5))
+    cnn_model.add(Conv1D(filters=nb_filter6, kernel_size=filter_length6, kernel_initializer='he_normal'))
+    cnn_model.add(BatchNormalization())
+    cnn_model.add(Activation('relu'))
+    cnn_model.add(MaxPooling1D())
     cnn_model.add(Flatten())
     cnn_model.add(Dense(1))
     cnn_model.add(Activation('sigmoid'))
     cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
-    cnn_model.fit(cnn_train_x, cnn_train_y, batch_size=batch_size, nb_epoch=epochs, validation_split=0.2)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,patience=5, min_lr=0.001)
+    cnn_model.fit(cnn_train_x, cnn_train_y, batch_size=batch_size, nb_epoch=epochs, validation_split=0.2, callbacks=[reduce_lr])
 ##################################### Step 2 #####################################
     rnn_train_x = []
     rnn_train_y = []
     for i in train_samples_id:
         sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i], explanations[i],intervals[i], dimension=dimension,step=2, train=False)
         if sample_x.shape[0] > 0:
-            sample_x = np.reshape(sample_x, [sample_x.shape[0], dimension//dimension_fraction,dimension_fraction])
+            sample_x = np.reshape(sample_x, [sample_x.shape[0], dimension // dimension_fraction, dimension_fraction])
             real_label = labels[i]
             if labels[i] == 'Normal':
                 real_label = 0
@@ -157,20 +173,25 @@ for run in range(0, num_experiments):
             predicted = np.reshape(predicted,[predicted.shape[0]])
             rnn_train_x.append(predicted)
             rnn_train_y.append(sample_y)
+    array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
+    array_train_x = np.reshape(array_train_x,[array_train_x.shape[0], array_train_x.shape[1],1])
     rnn_model = Sequential()
-    #rnn_model.add(LSTM(rnn_hidden_node, input_shape=(None, 1)))
-    rnn_model.add(SimpleRNN(rnn_hidden_node,input_shape=(None, 1)))
+    rnn_model.add(LSTM(rnn_hidden_node, input_shape=(None, 1)))
+    #rnn_model.add(SimpleRNN(rnn_hidden_node,input_shape=(None, 1)))
     rnn_model.add(Dropout(rnn_dropout))
+    rnn_model.add(PReLU())
     rnn_model.add(Dense(1))
     rnn_model.add(Activation('sigmoid'))
     rnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
-    array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
-    #model.fit(array_train_x, np.array(rnn_train_y), batch_size=batch_size, nb_epoch=epochs, validation_split=0.15)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,patience=5, min_lr=0.001)
+    rnn_model.fit(array_train_x, np.array(rnn_train_y), batch_size=rnn_batch_size, nb_epoch=rnn_epochs, validation_split=0.15, callbacks=[reduce_lr])
+    '''
     for counter in range(0, epochs):
         for x, y in zip(rnn_train_x,rnn_train_y):
             x = np.reshape(x,[1,x.shape[0], 1])
             y = np.reshape(y,[1,1])
             rnn_model.train_on_batch(x, y)
+    '''
 ##################################### Test on Test samples #####################################
     tp = 0
     tn = 0
@@ -231,7 +252,7 @@ for run in range(0, num_experiments):
     for i in train_samples_id:
         sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i], explanations[i],intervals[i], dimension=dimension,step=2, train=False)
         if sample_x.shape[0] > 0:
-            sample_x = np.reshape(sample_x, [sample_x.shape[0], dimension//dimension_fraction,dimension_fraction])
+            sample_x = np.reshape(sample_x, [sample_x.shape[0], dimension//dimension_fraction, dimension_fraction])
             #for counter in range(0, predicted.shape[0]):
                 #print('%d   %s  real label =%s    -> predicted = %f'%(i,names[i], labels[i], predicted[counter]))
             step1_predicted = cnn_model.predict(np.array(sample_x))
@@ -290,7 +311,7 @@ print('**** Total : Test samples: ****')
 print('\n--->Result for data = test , samples (%d Arrhythmic, %d Normal)' % ((fn+tp), (fp+tn)))
 print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, test_accuracy,test_sensitivity,test_precision))
 ##################################### Save results & parameters in file #####################################
-text_file = open("\nResult_main:raw+cnn.txt", "a")
+text_file = open("96.04.22 Result_main:raw+cnn.txt", "a")
 text_file.write("\t\t\tResult main: raw + CNN \n")
 text_file.write("Test: Accuracy: %f, Sensitivity: %f, Precision: %f\n" %(test_accuracy,test_sensitivity,test_precision))
 text_file.write("Train: Accuracy: %f, Sensitivity: %f, Precision: %f\n" %(train_accuracy,train_sensitivity,train_precision))
@@ -307,19 +328,12 @@ text_file.write("\nTest fn =")
 for ans in test_fn:
     text_file.write("%d,  " % ans)
 text_file.write("\nCNN model with %d parameters & %d layers ,  train on %d samples\n" %(cnn_model.count_params(), cnn_num_layer, cnn_train_x.shape[0]))
-text_file.write("\t %d kernel of size %d\n" %(nb_filter1, filter_length1))
-text_file.write("\tdropout 0.5")
-text_file.write("\t %d kernel of size %d\n" %(nb_filter2, filter_length2))
-text_file.write("\tdropout 0.5")
-text_file.write("\t %d kernel of size %d\n" %(nb_filter3, filter_length3))
-text_file.write("\tdropout 0.5")
-text_file.write("\t %d kernel of size %d\n" %(nb_filter4, filter_length4))
-text_file.write("\tdropout 0.5")
-text_file.write("\t %d kernel of size %d\n" %(nb_filter5, filter_length5))
-text_file.write("\tdropout 0.5")
-text_file.write("\t %d kernel of size %d\n" %(nb_filter6, filter_length6))
+text_file.write("  Activation function = relu\n")
+for layer in cnn_model.layers:
+    text_file.write("\t%s\n" %layer.name)
 text_file.write("  batch = %d, epochs = %d   dimension =%d (cnn input(%d,%d))\n" %(batch_size,epochs, dimension,dimension//dimension_fraction, dimension_fraction))
 text_file.write("\nRNN model with %d parameters, %s with %d node ,  train on %d samples  \n" %(rnn_model.count_params(),rnn_layer,rnn_hidden_node,len(rnn_train_y)))
 text_file.write("  batch = %d, epochs = %d      (dropout = %f)\n" %(rnn_batch_size,rnn_epochs,rnn_dropout))
+text_file.write("\n\n\t+Batch Normalization    + Dropout   + reduce learning rate(call back)")
 text_file.write("#######################################################")
 text_file.close()
