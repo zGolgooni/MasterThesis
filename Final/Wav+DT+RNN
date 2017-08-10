@@ -1,0 +1,351 @@
+__author__ = 'Zeynab'
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation,LSTM, Conv1D, MaxPooling1D, Flatten,SimpleRNN, AveragePooling1D
+from keras.preprocessing import sequence
+from keras.layers.normalization import BatchNormalization
+from keras.optimizers import Adam
+from keras.callbacks import ReduceLROnPlateau, TensorBoard
+from keras.layers.advanced_activations import PReLU
+import keras
+from sklearn import tree, svm
+import pywt
+from sklearn.decomposition import PCA, FastICA
+import numpy as np
+from Tools.file.read_list import load_file, split_samples, load_partitions
+from Tools.file.train_test_fractions import load_fractions, load_train
+
+from CNN.train_data import load_data_new, load_sample
+
+num_experiments = 5
+
+train_results = []
+test_results = []
+
+train_tp = []
+train_tn = []
+train_fp = []
+train_fn = []
+train_acc = []
+train_sens = []
+train_prec = []
+#train_fn = np.empty([num_experiments,1])
+
+test_tp = []
+test_tn = []
+test_fp = []
+test_fn = []
+test_acc = []
+test_sens = []
+test_prec = []
+
+train_fractions = []
+test_fractions = []
+
+train_total = load_train()
+train_fractions, validation_fractions = load_fractions()
+
+'''
+main_path = '/Users/Zeynab/'
+#main_file = 'My data/In use/Data_v960213.csv'
+main_file = 'My data/In use/Data_v960412.csv'
+'''
+
+main_path = '/home/mll/Golgooni/'
+main_file = 'My data/In use/Data_v960412.csv'
+
+
+ids, paths, names, sampling_rates, labels, explanations,partitions,intervals = load_file(main_path, main_file)
+############################# Set parameters #################################
+raw_dimension = 5000
+mother_wavelet = 'db4'
+wav_level = 8
+num_coefficient = 4
+wav_dimension = 0
+#optimizer default adam
+#initializer ones
+
+
+#wav_dimension = 22 + 22 + 38 + 69
+
+
+rnn_layer ='LSTM'
+rnn_hidden_node = 3
+rnn_dropout = 0.5
+
+
+rnn_dropout = 0.5
+rnn_batch_size = 4
+rnn_epochs = 100
+
+#############################  #################################
+
+for run in range(0, num_experiments):
+    train_samples_id = train_fractions[run]
+    test_samples_id = validation_fractions[run]
+
+############################# Pre step1 #################################
+    i = 0
+    index = 0
+    sample_x, sample_y = load_sample(main_path + paths[i], names[i], labels[i], sampling_rates[i], explanations[i], intervals[i], dimension=raw_dimension, step=3, train=False)
+    if wav_dimension == 0:
+        coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
+        wav_dimension = 0
+        for c in range(0, num_coefficient):
+            wav_dimension += coefficients[c].shape[0]
+    ############################# Step1 #################################
+    raw_train_x, raw_train_y = load_data_new(main_path, main_file, train_samples_id, raw_dimension, train=True)
+    clf_train_x = np.empty((0, wav_dimension))
+    clf_train_y = np.empty((0, 2))
+    for i in range(0, raw_train_x.shape[0]):
+        sample = raw_train_x[i, :]
+        coefficients = pywt.wavedec(sample[:, 0], mother_wavelet, level=wav_level)
+        wav_features = np.empty((0,0))
+        for j in range(0, num_coefficient):
+            wav_features = np.append(wav_features, coefficients[j])
+        reshaped_features = np.reshape(wav_features,[1,wav_dimension])
+        clf_train_x = np.append(clf_train_x, reshaped_features, axis=0)
+    clf_train_y = raw_train_y
+
+    clf = tree.DecisionTreeClassifier()
+    clf.fit(clf_train_x, clf_train_y)
+############################ Step 2 ################################
+    rnn_train_x = []
+    rnn_train_y = []
+
+    for i in train_samples_id:
+        sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
+        sample_features = np.empty((0, wav_dimension))
+        for index in range(0,sample_x.shape[0]):
+            coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
+            wav_features = np.empty((0, 0))
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
+            reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
+            sample_features = np.append(sample_features, reshaped_feature, axis=0)
+        predicted = clf.predict(sample_features)
+
+        rnn_train_x.append(predicted)
+        if labels[i] == 'Normal':
+            rnn_train_y.append(0)
+        else:
+            rnn_train_y.append(1)
+
+    array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
+    array_train_x = np.reshape(array_train_x, [array_train_x.shape[0], array_train_x.shape[1], 1])
+
+    rnn_model = Sequential()
+    init_one = keras.initializers.Ones()
+    rnn_model.add(LSTM(rnn_hidden_node, input_shape=(None, 1), kernel_initializer=init_one))
+    rnn_model.add(BatchNormalization())
+    rnn_model.add(PReLU())
+    rnn_model.add(Dropout(rnn_dropout))
+    rnn_model.add(Dense(1))
+    rnn_model.add(Activation('sigmoid'))
+    rnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
+    array_train_x = sequence.pad_sequences(rnn_train_x, maxlen=None, dtype='float64', padding='post', truncating='post',value=0.)
+    array_train_x = np.reshape(array_train_x, [array_train_x.shape[0], array_train_x.shape[1], 1])
+
+    rnn_model.fit(array_train_x, np.array(rnn_train_y), batch_size=rnn_batch_size, nb_epoch=rnn_epochs, validation_split=0.15)
+    '''
+    for counter in range(0, epochs):
+        for x, y in zip(rnn_train_x, rnn_train_y):
+            x = np.reshape(x, [1, x.shape[0], 1])
+            y = np.reshape(y, [1, 1])
+            rnn_model.train_on_batch(x, y)
+    '''
+# ----------------  Test model  on test samples ---------------
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    n = 0
+
+    fp_samples = []
+    fn_samples = []
+    for i in test_samples_id:
+        sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
+        sample_features = np.empty((0,wav_dimension))
+        for index in range(0,sample_x.shape[0]):
+            coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
+            wav_features = np.empty((0, 0))
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
+            reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
+            sample_features = np.append(sample_features, reshaped_feature, axis=0)
+
+        step1_predicted = clf.predict(sample_features)
+        reshaped_predict = np.reshape(step1_predicted,[1,step1_predicted.shape[0],1])
+        final_predicted = rnn_model.predict(reshaped_predict)
+
+        if final_predicted[0] < 0.5:
+            predicted_label = 'Normal'
+        else:
+            predicted_label = 'Arrhythmic'
+        #print('%d   %s  real label =%s    -> predicted = %s    %f'%(i,names[i], labels[i], predicted_label, final_predicted[0]))
+        n += 1
+        if labels[i] == 'Normal':
+            if predicted_label == 'Normal':
+                tn += 1
+            else:
+                fp += 1
+                fp_samples.append(i)
+        else:
+            if predicted_label == 'Normal':
+                fn += 1
+                fn_samples.append(i)
+            else:
+                tp += 1
+    print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, total-> %f, positive accuracy-> %f\n\n' % (tp, tn, fp, fn, ((tp+tn)/n),(tp/(tp+fn))))
+    test_tp.append(tp)
+    test_tn.append(tn)
+    test_fp.append(fp)
+    test_fn.append(fn)
+    test_acc.append((tp + tn) / n)
+    test_sens.append(tp / (tp + fn))
+    test_prec.append(tp / (tp + fp))
+    print('+++++++++++++   (Test) Pay attention ++++++++++++++')
+    print('fn:')
+    print(fn_samples)
+    print('fp:')
+    print(fp_samples)
+
+# ----------------  Test model  on train samples ---------------
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    n = 0
+    fp_samples = []
+    fn_samples = []
+    for i in train_samples_id:
+        sample_x, sample_y = load_sample(main_path+paths[i], names[i], labels[i], sampling_rates[i],explanations[i], intervals[i], dimension=raw_dimension,step =3, train=False)
+        sample_features = np.empty((0,wav_dimension))
+        for index in range(0,sample_x.shape[0]):
+            coefficients = pywt.wavedec(sample_x[index,:], mother_wavelet, level=wav_level)
+            wav_features = np.empty((0, 0))
+            for j in range(0, num_coefficient):
+                wav_features = np.append(wav_features, coefficients[j])
+            reshaped_feature = np.reshape(wav_features, [1, wav_dimension])
+            sample_features = np.append(sample_features, reshaped_feature, axis=0)
+
+        step1_predicted = clf.predict(sample_features)
+        reshaped_predict = np.reshape(step1_predicted,[1,step1_predicted.shape[0],1])
+        final_predicted = rnn_model.predict(reshaped_predict)
+
+        if final_predicted[0] < 0.5:
+            predicted_label = 'Normal'
+        else:
+            predicted_label = 'Arrhythmic'
+        #print('%d   %s  real label =%s    -> predicted = %s    %f'%(i,names[i], labels[i], predicted_label, final_predicted[0]))
+        n += 1
+        if labels[i] == 'Normal':
+            if predicted_label == 'Normal':
+                tn += 1
+            else:
+                fp += 1
+                fp_samples.append(i)
+        else:
+            if predicted_label == 'Normal':
+                fn += 1
+                fn_samples.append(i)
+            else:
+                tp += 1
+    print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, total-> %f, positive accuracy-> %f\n\n' % (tp, tn, fp, fn, ((tp+tn)/n),(tp/(tp+fn))))
+    train_tp.append(tp)
+    train_tn.append(tn)
+    train_fp.append(fp)
+    train_fn.append(fn)
+    train_acc.append((tp + tn) / n)
+    train_sens.append(tp / (tp + fn))
+    train_prec.append(tp / (tp + fp))
+    print('+++++++++++++   (Train) Pay attention ++++++++++++++')
+    print('fn:')
+    print(fn_samples)
+    print('fp:')
+    print(fp_samples)
+
+##################################### Total result #####################################
+
+tp = np.average(np.array(train_tp))
+tn = np.average(np.array(train_tn))
+fp = np.average(np.array(train_fp))
+fn = np.average(np.array(train_fn))
+train_accuracy = np.average(np.array(train_acc))
+train_sensitivity = np.average(np.array(train_sens))
+train_precision = np.average(np.array(train_prec))
+print('**** Total : Train samples: ****')
+print('\n--->Result for data = train , samples (%d Arrhythmic, %d Normal)' % ((fn+tp), (fp+tn)))
+print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, train_accuracy,train_sensitivity,train_precision))
+
+tp = np.average(np.array(test_tp))
+tn = np.average(np.array(test_tn))
+fp = np.average(np.array(test_fp))
+fn = np.average(np.array(test_fn))
+test_accuracy = np.average(np.array(test_acc))
+test_sensitivity = np.average(np.array(test_sens))
+test_precision = np.average(np.array(test_prec))
+print('**** Total : Test samples: ****')
+print('\n--->Result for data = test , samples (%d Arrhythmic, %d Normal)' % ((fn+tp), (fp+tn)))
+print('\t\ttp = %f, tn = %f, fp = %f, fn = %f, Accuracy-> %f, recall-> %f,  precision-> %f\n\n' % (tp, tn, fp, fn, test_accuracy,test_sensitivity,test_precision))
+
+##################################### Save results & parameters in file #####################################
+rnn_model.save_weights('wav_dt_rnn_model_05.19_1.h5')
+for i in test_acc:
+    print('test   %f, ' %i)
+print('\n')
+for i in train_acc:
+    print('train %f, ' %i)
+
+rnn_model.summary()
+rnn_model.get_config()
+print('WAV   db4,  level 8 & #coefficients = 4')
+print('Thesis  - 95.05.19  wav+DT+RNN  1 :))) ')
+
+
+'''
+**** Total : Train samples: ****
+
+--->Result for data = train , samples (139 Arrhythmic, 104 Normal)
+		tp = 135.600000, tn = 103.600000, fp = 0.400000, fn = 3.400000, Accuracy-> 0.984362, recall-> 0.975540,  precision-> 0.997143
+
+
+**** Total : Test samples: ****
+
+--->Result for data = test , samples (34 Arrhythmic, 26 Normal)
+		tp = 30.000000, tn = 16.600000, fp = 9.400000, fn = 4.000000, Accuracy-> 0.776667, recall-> 0.882353,  precision-> 0.775253
+
+
+test   0.816667, 
+test   0.633333, 
+test   0.716667, 
+test   1.000000, 
+test   0.716667, 
+
+
+train 0.991770, 
+train 0.950617, 
+train 0.987654, 
+train 0.995885, 
+train 0.995885, 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+lstm_5 (LSTM)                (None, 3)                 60        
+_________________________________________________________________
+batch_normalization_5 (Batch (None, 3)                 12        
+_________________________________________________________________
+p_re_lu_5 (PReLU)            (None, 3)                 3         
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 3)                 0         
+_________________________________________________________________
+dense_5 (Dense)              (None, 1)                 4         
+_________________________________________________________________
+activation_5 (Activation)    (None, 1)                 0         
+=================================================================
+Total params: 79
+Trainable params: 73
+Non-trainable params: 6
+_________________________________________________________________
+WAV   db4,  level 8 & #coefficients = 4
+Thesis  - 95.05.19  wav+DT+RNN  1 :))) 
+'''
